@@ -1,0 +1,12 @@
+#message{
+    margin-top: 20px;
+    margin-left: 20px;
+}
+
+#messages{
+    margin-top: 40px;
+    margin-left: 20px;
+    font-size: 18px;
+    border-top: 1px solid #ccc;
+    line-height: 30px;
+}

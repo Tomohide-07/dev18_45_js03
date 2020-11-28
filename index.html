@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatアプリ</title>
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.1.1/firebase.js"></script>
+
+  <script>
+    var firebaseConfig = {
+      apiKey: "AIzaSyDM_xcNJqRwADGi4poAZsKX4kkalUzaPVU",
+      authDomain: "dev18-chat-2f966.firebaseapp.com",
+      databaseURL: "https://dev18-chat-2f966.firebaseio.com",
+      projectId: "dev18-chat-2f966",
+      storageBucket: "dev18-chat-2f966.appspot.com",
+      messagingSenderId: "132784177589",
+      appId: "1:132784177589:web:5235445516a206db7fd9fc"
+      };
+
+    firebase.initializeApp(firebaseConfig);
+
+    const myName = prompt("名前を入力してください")
+
+    function sendMessage(){
+        let message = document.getElementById("message").value;
+        firebase.database().ref("messages").push().set({
+            "sender": myName,
+            "message": message
+        });
+        return false;
+    }
+
+    firebase.database().ref("messages").on("child_added", function(snapshot){
+        let html = "";
+        html += "<li id='message-" + snapshot.key + "'>";
+            html += snapshot.val().sender + ":　" + snapshot.val().message;
+            if(snapshot.val().sender == myName){
+                html += "<button data-id='" + snapshot.key + "' onclick='deleteMessage(this);'>";
+                    html += "削除"
+                html += "</button>";
+            }
+        html += "</li>";
+        document.getElementById("messages").innerHTML += html;
+    });
+
+    function deleteMessage(self){
+        let messagId = self.getAttribute("data-id");
+        firebase.database().ref("messages").child(messagId).remove();
+    }
+
+    firebase.database().ref("messages").on("child_removed", function (snapshot) {
+        document.getElementById("message-" + snapshot.key).innerHTML = "このメッセージは削除されました"
+    });
+  </script>
+
+  <form onsubmit="return sendMessage();">
+    <textarea id="message" type="text" cols="30" rows="2" placeholder="メッセージを入力してください"></textarea>
+    <input id="submit" type="submit">
+  </form>
+
+  <ul id="messages"></ul>
+
+</body>
+
+</html>
